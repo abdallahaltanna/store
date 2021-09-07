@@ -1,29 +1,47 @@
-import React from 'react'
-import styled from 'styled-components'
-import { useFilterContext } from '../context/filter_context'
-import { getUniqueValues, formatPrice } from '../utils/helpers'
-import { FaCheck } from 'react-icons/fa'
+import React from 'react';
+import styled from 'styled-components';
+import { getUniqueValues, formatPrice } from '../../utils/helpers';
+import { FaCheck } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateFilters, clearFilters } from '../../store/filter_slice';
 
 const Filters = () => {
+  const dispatch = useDispatch();
   const {
+    all_products,
     filters: {
       text,
-      category,
       company,
+      category,
       color,
-      min_price,
       price,
-      max_price,
       shipping,
+      min_price,
+      max_price,
     },
-    updateFilters,
-    clearFilters,
-    all_products,
-  } = useFilterContext()
+  } = useSelector((state) => state.filter);
 
-  const categories = getUniqueValues(all_products, 'category')
-  const companies = getUniqueValues(all_products, 'company')
-  const colors = getUniqueValues(all_products, 'colors')
+  const categories = getUniqueValues(all_products, 'category');
+  const companies = getUniqueValues(all_products, 'company');
+  const colors = getUniqueValues(all_products, 'colors');
+
+  const update = (e) => {
+    let name = e.target.name;
+    let value = e.target.value;
+    if (name === 'category') {
+      value = e.target.textContent;
+    }
+    if (name === 'color') {
+      value = e.target.dataset.color;
+    }
+    if (name === 'price') {
+      value = Number(value);
+    }
+    if (name === 'shipping') {
+      value = e.target.checked;
+    }
+    dispatch(updateFilters({ name, value }));
+  };
 
   return (
     <Wrapper>
@@ -37,7 +55,7 @@ const Filters = () => {
               placeholder='search'
               className='search-input'
               value={text}
-              onChange={updateFilters}
+              onChange={update}
             />
           </div>
           {/* end search input */}
@@ -49,7 +67,7 @@ const Filters = () => {
                 return (
                   <button
                     key={index}
-                    onClick={updateFilters}
+                    onClick={update}
                     type='button'
                     name='category'
                     className={`${
@@ -58,7 +76,7 @@ const Filters = () => {
                   >
                     {c}
                   </button>
-                )
+                );
               })}
             </div>
           </div>
@@ -69,7 +87,7 @@ const Filters = () => {
             <select
               name='company'
               value={company}
-              onChange={updateFilters}
+              onChange={update}
               className='company'
             >
               {companies.map((c, index) => {
@@ -77,7 +95,7 @@ const Filters = () => {
                   <option key={index} value={c}>
                     {c}
                   </option>
-                )
+                );
               })}
             </select>
           </div>
@@ -94,7 +112,7 @@ const Filters = () => {
                     <button
                       key={index}
                       name='color'
-                      onClick={updateFilters}
+                      onClick={update}
                       data-color='all'
                       className={`${
                         color === 'all' ? 'all-btn active' : 'all-btn'
@@ -102,7 +120,7 @@ const Filters = () => {
                     >
                       all
                     </button>
-                  )
+                  );
                 }
                 return (
                   <button
@@ -113,17 +131,15 @@ const Filters = () => {
                       color === c ? 'color-btn active' : 'color-btn'
                     }`}
                     data-color={c}
-                    onClick={updateFilters}
+                    onClick={update}
                   >
                     {color === c ? <FaCheck /> : null}
                   </button>
-                )
+                );
               })}
             </div>
           </div>
-          {/* 
-end of           colors
-          */}
+          {/* end of colors */}
           {/* price */}
           <div className='form-control'>
             <h5>price</h5>
@@ -133,7 +149,7 @@ end of           colors
               name='price'
               min={min_price}
               max={max_price}
-              onChange={updateFilters}
+              onChange={update}
               value={price}
             />
           </div>
@@ -145,20 +161,23 @@ end of           colors
               type='checkbox'
               name='shipping'
               id='shipping'
-              onChange={updateFilters}
+              onChange={update}
               checked={shipping}
             />
           </div>
           {/* end of  shippping */}
         </form>
-        <button type='button' className='clear-btn' onClick={clearFilters}>
-          {' '}
+        <button
+          type='button'
+          className='clear-btn'
+          onClick={() => dispatch(clearFilters())}
+        >
           clear filters
         </button>
       </div>
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.section`
   .form-control {
@@ -257,6 +276,6 @@ const Wrapper = styled.section`
       top: 1rem;
     }
   }
-`
+`;
 
-export default Filters
+export default Filters;

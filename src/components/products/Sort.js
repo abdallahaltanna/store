@@ -1,35 +1,54 @@
-import React from 'react'
-import { useFilterContext } from '../context/filter_context'
-import { BsFillGridFill, BsList } from 'react-icons/bs'
-import styled from 'styled-components'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  updateSort,
+  sortProducts,
+  filterProducts,
+} from '../../store/filter_slice';
+import { uiActions } from '../../store/ui_slice';
+
+import { BsFillGridFill, BsList } from 'react-icons/bs';
+import styled from 'styled-components';
+
 const Sort = () => {
+  const dispatch = useDispatch();
+  const { grid_view } = useSelector((state) => state.ui);
+  const { products } = useSelector((state) => state.products);
   const {
-    filtered_products: products,
-    grid_view,
-    setGridView,
-    setListView,
+    filtered_products: filProducts,
     sort,
-    updateSort,
-  } = useFilterContext()
+    filters,
+  } = useSelector((state) => state.filter);
+
+  const updateSorting = (e) => {
+    const value = e.target.value;
+    dispatch(updateSort(value));
+  };
+
+  useEffect(() => {
+    dispatch(filterProducts());
+    dispatch(sortProducts());
+  }, [sort, products, filters]);
+
   return (
     <Wrapper>
       <div className='btn-container'>
         <button
           type='button'
           className={`${grid_view ? 'active' : null}`}
-          onClick={setGridView}
+          onClick={() => dispatch(uiActions.gridView())}
         >
           <BsFillGridFill />
         </button>
         <button
           type='button'
           className={`${!grid_view ? 'active' : null}`}
-          onClick={setListView}
+          onClick={() => dispatch(uiActions.listView())}
         >
           <BsList />
         </button>
       </div>
-      <p>{products.length} products found</p>
+      <p>{filProducts.length} products found</p>
       <hr />
       <form>
         <label htmlFor='sort'>sort by</label>
@@ -38,7 +57,7 @@ const Sort = () => {
           id='sort'
           className='sort-input'
           value={sort}
-          onChange={updateSort}
+          onChange={updateSorting}
         >
           <option value='price-lowest'>price (lowest)</option>
           <option value='price-highest'>price (highest)</option>
@@ -47,8 +66,8 @@ const Sort = () => {
         </select>
       </form>
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.section`
   display: grid;
@@ -111,6 +130,6 @@ const Wrapper = styled.section`
     font-size: 1rem;
     text-transform: capitalize;
   }
-`
+`;
 
-export default Sort
+export default Sort;

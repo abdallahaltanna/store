@@ -1,17 +1,22 @@
-import React from 'react'
-import styled from 'styled-components'
-import { formatPrice } from '../utils/helpers'
-import AmountButtons from './AmountButtons'
-import { FaTrash } from 'react-icons/fa'
-import { useCartContext } from '../context/cart_context'
+import React from 'react';
+import styled from 'styled-components';
+import { formatPrice } from '../../utils/helpers';
+import AmountButtons from '../ui/AmountButtons';
+import { FaTrash } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { removeItem, toggleAmount } from '../../store/cart_slice';
+
 const CartItem = ({ id, image, name, color, price, amount }) => {
-  const { removeItem, toggleAmount } = useCartContext()
+  const dispatch = useDispatch();
+
+  let value = 'inc';
   const increase = () => {
-    toggleAmount(id, 'inc')
-  }
+    dispatch(toggleAmount({ id, value }));
+  };
   const decrease = () => {
-    toggleAmount(id, 'dec')
-  }
+    value = 'dec';
+    dispatch(toggleAmount({ id, value }));
+  };
   return (
     <Wrapper>
       <div className='title'>
@@ -30,13 +35,13 @@ const CartItem = ({ id, image, name, color, price, amount }) => {
       <button
         type='button'
         className='remove-btn'
-        onClick={() => removeItem(id)}
+        onClick={() => dispatch(removeItem(id))}
       >
         <FaTrash />
       </button>
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.article`
   .subtotal {
@@ -172,6 +177,6 @@ const Wrapper = styled.article`
       }
     }
   }
-`
+`;
 
-export default CartItem
+export default CartItem;

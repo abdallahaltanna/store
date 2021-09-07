@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react'
-import { useParams, useHistory } from 'react-router-dom'
-import { useProductsContext } from '../context/products_context'
-import { single_product_url as url } from '../utils/constants'
-import { formatPrice } from '../utils/helpers'
+import React, { useEffect } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import { single_product_url as url } from '../utils/constants';
+import { formatPrice } from '../utils/helpers';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  singleProductBegin,
+  singleProductError,
+  singleProductSuccess,
+} from '../store/single_product_slice';
 import {
   Loading,
   Error,
@@ -10,39 +15,52 @@ import {
   AddToCart,
   Stars,
   PageHero,
-} from '../components'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+} from '../components';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const SingleProductPage = () => {
-  const { id } = useParams()
-  const history = useHistory()
+  const { id } = useParams();
+  const history = useHistory();
+  const dispatch = useDispatch();
+
   const {
     single_product_loading: loading,
     single_product_error: error,
     single_product: product,
-    fetchSingleProduct,
-  } = useProductsContext()
+  } = useSelector((state) => state.singleProduct);
+
+  const fetchSingleProduct = async (url) => {
+    dispatch(singleProductBegin());
+    try {
+      const response = await axios.get(url);
+      const singleProductData = response.data;
+      dispatch(singleProductSuccess(singleProductData));
+    } catch (error) {
+      dispatch(singleProductError());
+    }
+  };
 
   useEffect(() => {
-    fetchSingleProduct(`${url}${id}`)
+    fetchSingleProduct(`${url}${id}`);
     // eslint-disable-next-line
-  }, [id])
+  }, [id]);
 
   useEffect(() => {
     if (error) {
       setTimeout(() => {
-        history.push('/')
-      }, 3000)
+        history.push('/');
+      }, 3000);
     }
     // eslint-disable-next-line
-  }, [error])
+  }, [error]);
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
   if (error) {
-    return <Error />
+    return <Error />;
   }
   const {
     name,
@@ -54,7 +72,7 @@ const SingleProductPage = () => {
     id: sku,
     company,
     images,
-  } = product
+  } = product;
   return (
     <Wrapper>
       <PageHero title={name} product />
@@ -87,8 +105,8 @@ const SingleProductPage = () => {
         </div>
       </div>
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.main`
   .product-center {
@@ -122,6 +140,6 @@ const Wrapper = styled.main`
       font-size: 1.25rem;
     }
   }
-`
+`;
 
-export default SingleProductPage
+export default SingleProductPage;

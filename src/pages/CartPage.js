@@ -1,11 +1,12 @@
-import React from 'react'
-import styled from 'styled-components'
-import { useCartContext } from '../context/cart_context'
-import { Link } from 'react-router-dom'
-import { CartContent, PageHero } from '../components'
+import React from 'react';
+import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { CartContent, PageHero } from '../components';
 
 const CartPage = () => {
-  const { cart } = useCartContext()
+  const { cart } = useSelector((state) => state.cart);
+
   if (cart.length < 1) {
     return (
       <Wrapper className='page-100'>
@@ -16,7 +17,7 @@ const CartPage = () => {
           </Link>
         </div>
       </Wrapper>
-    )
+    );
   }
   return (
     <main>
@@ -25,8 +26,8 @@ const CartPage = () => {
         <CartContent />
       </Wrapper>
     </main>
-  )
-}
+  );
+};
 
 const Wrapper = styled.main`
   .empty {
@@ -36,6 +37,6 @@ const Wrapper = styled.main`
       text-transform: none;
     }
   }
-`
+`;
 
-export default CartPage
+export default CartPage;

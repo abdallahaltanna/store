@@ -1,22 +1,23 @@
-import FeaturedProducts from './FeaturedProducts'
-import Navbar from './Navbar'
-import CartButtons from './CartButtons'
-import Footer from './Footer'
-import Sidebar from './Sidebar'
-import Hero from './Hero'
-import Services from './Services'
-import Contact from './Contact'
-import Loading from './Loading'
-import Error from './Error'
-import ProductImages from './ProductImages'
-import AddToCart from './AddToCart'
-import Filters from './Filters'
-import ProductList from './ProductList'
-import Sort from './Sort'
-import Stars from './Stars'
-import CartContent from './CarContent'
-import PageHero from './PageHero'
-import StripeCheckout from './StripeCheckout'
+import FeaturedProducts from './products/FeaturedProducts';
+import Navbar from './ui/header/Navbar';
+import CartButtons from './ui/header/CartButtons';
+import Footer from './ui/Footer';
+import Sidebar from './ui/header/Sidebar';
+import Hero from './Hero';
+import Services from './Services';
+import Contact from './Contact';
+import Loading from './ui/Loading';
+import Error from './ui/Error';
+import ProductImages from './products/ProductImages';
+import AddToCart from './cart/AddToCart';
+import Filters from './products/Filters';
+import ProductList from './products/ProductList';
+import Sort from './products/Sort';
+import Stars from './Stars';
+import CartContent from './cart/CarContent';
+import PageHero from './ui/PageHero';
+import StripeCheckout from './StripeCheckout';
+
 export {
   FeaturedProducts,
   Navbar,
@@ -37,4 +38,4 @@ export {
   CartContent,
   PageHero,
   StripeCheckout,
-}
+};

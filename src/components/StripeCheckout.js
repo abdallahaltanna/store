@@ -1,32 +1,37 @@
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-import { loadStripe } from '@stripe/stripe-js'
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { loadStripe } from '@stripe/stripe-js';
 import {
   CardElement,
   useStripe,
   Elements,
   useElements,
-} from '@stripe/react-stripe-js'
-import axios from 'axios'
-import { useCartContext } from '../context/cart_context'
-import { useUserContext } from '../context/user_context'
-import { formatPrice } from '../utils/helpers'
-import { useHistory } from 'react-router-dom'
+} from '@stripe/react-stripe-js';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { useUserContext } from '../context/user_context';
+import { formatPrice } from '../utils/helpers';
+import { useHistory } from 'react-router-dom';
+import { clearCart } from '../store/cart_slice';
 
-const promise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
+const promise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const CheckoutForm = () => {
-  const { cart, total_amount, shipping_fee, clearCart } = useCartContext()
-  const { myUser } = useUserContext()
-  const history = useHistory()
+  const dispatch = useDispatch();
+  const { cart, total_amount, shipping_fee } = useSelector(
+    (state) => state.cart
+  );
+
+  const { myUser } = useUserContext();
+  const history = useHistory();
   // STRIPE STUFF
-  const [succeeded, setSucceeded] = useState(false)
-  const [error, setError] = useState(null)
-  const [processing, setProcessing] = useState('')
-  const [disabled, setDisabled] = useState(true)
-  const [clientSecret, setClientSecret] = useState('')
-  const stripe = useStripe()
-  const elements = useElements()
+  const [succeeded, setSucceeded] = useState(false);
+  const [error, setError] = useState(null);
+  const [processing, setProcessing] = useState('');
+  const [disabled, setDisabled] = useState(true);
+  const [clientSecret, setClientSecret] = useState('');
+  const stripe = useStripe();
+  const elements = useElements();
 
   const cardStyle = {
     style: {
@@ -44,51 +49,51 @@ const CheckoutForm = () => {
         iconColor: '#fa755a',
       },
     },
-  }
+  };
 
   const createPaymentIntent = async () => {
     try {
       const { data } = await axios.post(
         '/.netlify/functions/create-payment-intent',
         JSON.stringify({ cart, shipping_fee, total_amount })
-      )
+      );
 
-      setClientSecret(data.clientSecret)
+      setClientSecret(data.clientSecret);
     } catch (error) {
       // console.log(error.response)
     }
-  }
+  };
 
   useEffect(() => {
-    createPaymentIntent()
+    createPaymentIntent();
     // eslint-disable-next-line
-  }, [])
+  }, []);
 
   const handleChange = async (event) => {
-    setDisabled(event.empty)
-    setError(event.error ? event.error.message : '')
-  }
+    setDisabled(event.empty);
+    setError(event.error ? event.error.message : '');
+  };
   const handleSubmit = async (ev) => {
-    ev.preventDefault()
-    setProcessing(true)
+    ev.preventDefault();
+    setProcessing(true);
     const payload = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements.getElement(CardElement),
       },
-    })
+    });
     if (payload.error) {
-      setError(`Payment failed ${payload.error.message}`)
-      setProcessing(false)
+      setError(`Payment failed ${payload.error.message}`);
+      setProcessing(false);
     } else {
-      setError(null)
-      setProcessing(false)
-      setSucceeded(true)
+      setError(null);
+      setProcessing(false);
+      setSucceeded(true);
       setTimeout(() => {
-        clearCart()
-        history.push('/')
-      }, 10000)
+        dispatch(clearCart());
+        history.push('/');
+      }, 10000);
     }
-  }
+  };
 
   return (
     <div>
@@ -132,8 +137,8 @@ const CheckoutForm = () => {
         </p>
       </form>
     </div>
-  )
-}
+  );
+};
 
 const StripeCheckout = () => {
   return (
@@ -142,8 +147,8 @@ const StripeCheckout = () => {
         <CheckoutForm />
       </Elements>
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.section`
   form {
@@ -283,6 +288,6 @@ const Wrapper = styled.section`
       width: 80vw;
     }
   }
-`
+`;
 
-export default StripeCheckout
+export default StripeCheckout;
