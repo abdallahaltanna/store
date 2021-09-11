@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
+import React, { useState } from 'react';
+import styled from 'styled-components';
 
 const ProductImages = ({ images = [{ url: '' }] }) => {
-  const [main, setMain] = useState(images[0])
+  const [main, setMain] = useState(images[0]);
+
   return (
     <Wrapper>
       <img src={main.url} alt='main' className='main' />
@@ -16,12 +17,12 @@ const ProductImages = ({ images = [{ url: '' }] }) => {
               onClick={() => setMain(images[index])}
               className={`${image.url === main.url ? 'active' : null}`}
             />
-          )
+          );
         })}
       </div>
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.section`
   .main {
@@ -66,6 +67,6 @@ const Wrapper = styled.section`
       }
     }
   }
-`
+`;
 
-export default ProductImages
+export default ProductImages;

@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Error from '../ui/Error';
 import Loading from '../ui/Loading';
 import Product from './Product';
 import { useSelector } from 'react-redux';
+import Aos from 'aos';
+import 'aos/dist/aos.css';
 
 const FeaturedProducts = () => {
+  useEffect(() => {
+    Aos.init({ duration: 2000 });
+  }, []);
+
   const {
     products_loading: loading,
     products_error: error,
@@ -18,13 +24,18 @@ const FeaturedProducts = () => {
   if (error) {
     return <Error />;
   }
+
   return (
     <Wrapper className='section'>
       <div className='title'>
         <h2>featured products</h2>
         <div className='underline'></div>
       </div>
-      <div className='section-center featured'>
+      <div
+        className='section-center featured'
+        data-aos='fade-up'
+        data-aos-once='true'
+      >
         {featured.slice(0, 3).map((product) => {
           return <Product key={product.id} {...product} />;
         })}

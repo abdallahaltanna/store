@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { services } from '../utils/constants';
+import Aos from 'aos';
+import 'aos/dist/aos.css';
 
 const Services = () => {
+  useEffect(() => {
+    Aos.init({ duration: 2000 });
+  }, []);
   return (
     <Wrapper>
       <div className='section-center'>
@@ -17,7 +22,11 @@ const Services = () => {
             quod?
           </p>
         </article>
-        <div className='services-center'>
+        <div
+          className='services-center'
+          data-aos='fade-up'
+          data-aos-once='true'
+        >
           {services.map((service) => {
             const { id, icon, title, text } = service;
             return (
